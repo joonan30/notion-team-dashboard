@@ -1,0 +1,35 @@
+{
+  "team_name": "My Lab",
+  "team_url": "",
+  "output_path": "./dashboard.html",
+  "lookback_days": 7,
+  "workspace": {
+    "intern_db_collection": ""
+  },
+  "members": {
+    "graduate": {
+      "Alice Kim": {
+        "role": "PhD",
+        "focus": "Machine Learning",
+        "notion_page": "",
+        "alt_name": ""
+      },
+      "Bob Park": {
+        "role": "MS",
+        "focus": "Data Engineering",
+        "notion_page": ""
+      }
+    },
+    "staff": {
+      "Carol Lee": {
+        "role": "Research Engineer"
+      }
+    },
+    "interns": {
+      "Dave Choi": {
+        "since": "2026-01",
+        "notion_page": ""
+      }
+    }
+  }
+}

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acme Lab — Weekly Dashboard</title>
+<style>
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface-hover: #22263a;
+  --border: #2a2e3d;
+  --text: #e4e6ef;
+  --text-dim: #8b8fa3;
+  --accent: #6c8cff;
+  --accent-dim: #4a65cc;
+  --green: #4ade80;
+  --yellow: #facc15;
+  --red: #f87171;
+  --orange: #fb923c;
+  --purple: #a78bfa;
+  --radius: 12px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; line-height:1.6; padding:24px; max-width:1280px; margin:0 auto; }
+a { color:var(--accent); text-decoration:none; }
+a:hover { text-decoration:underline; }
+
+.header { text-align:center; margin-bottom:32px; }
+.header h1 { font-size:2rem; font-weight:700; margin-bottom:4px; }
+.header .date-range { color:var(--text-dim); font-size:0.95rem; }
+
+.stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:32px; }
+.stat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px; text-align:center; }
+.stat-card .stat-value { font-size:2rem; font-weight:700; color:var(--accent); }
+.stat-card .stat-label { font-size:0.85rem; color:var(--text-dim); margin-top:4px; }
+
+h2 { font-size:1.3rem; font-weight:600; margin:32px 0 16px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+
+.deadlines { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px; margin-bottom:16px; }
+.deadline-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; display:flex; justify-content:space-between; align-items:center; }
+.deadline-card .dl-info h3 { font-size:0.95rem; }
+.deadline-card .dl-info .dl-date { font-size:0.8rem; color:var(--text-dim); }
+.deadline-card .dl-badge { font-size:0.75rem; font-weight:600; padding:4px 10px; border-radius:20px; }
+.badge-warn { background:rgba(250,204,21,0.15); color:var(--yellow); }
+.badge-ok { background:rgba(74,222,128,0.15); color:var(--green); }
+.badge-urgent { background:rgba(248,113,113,0.15); color:var(--red); }
+
+.tag { display:inline-block; font-size:0.7rem; font-weight:600; padding:2px 8px; border-radius:10px; margin:2px; background:rgba(108,140,255,0.15); color:var(--accent); }
+.tag-green { background:rgba(74,222,128,0.12); color:var(--green); }
+.tag-yellow { background:rgba(250,204,21,0.12); color:var(--yellow); }
+.tag-purple { background:rgba(167,139,250,0.12); color:var(--purple); }
+.tag-orange { background:rgba(251,146,60,0.12); color:var(--orange); }
+
+.projects { display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:16px; }
+.project-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px; }
+.project-card h3 { font-size:1rem; margin-bottom:8px; }
+.project-card .project-meta { font-size:0.8rem; color:var(--text-dim); margin-bottom:12px; }
+.task-list { list-style:none; font-size:0.85rem; }
+.task-list li { padding:3px 0; }
+.task-list li::before { margin-right:8px; }
+.task-done::before { content:"✓"; color:var(--green); font-weight:bold; }
+.task-doing::before { content:"→"; color:var(--yellow); font-weight:bold; }
+.task-todo::before { content:"○"; color:var(--text-dim); }
+
+.members-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; }
+details.member-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
+details.member-card[open] { border-color:var(--accent-dim); }
+details.member-card summary { padding:16px 20px; cursor:pointer; display:flex; align-items:center; gap:12px; list-style:none; }
+details.member-card summary::-webkit-details-marker { display:none; }
+details.member-card summary::after { content:"▸"; margin-left:auto; color:var(--text-dim); transition:transform 0.2s; }
+details.member-card[open] summary::after { transform:rotate(90deg); }
+.member-avatar { width:36px; height:36px; border-radius:50%; background:var(--accent-dim); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem; flex-shrink:0; }
+.member-name { font-weight:600; font-size:0.95rem; }
+.member-role { font-size:0.75rem; color:var(--text-dim); }
+.member-status { font-size:0.7rem; padding:2px 8px; border-radius:10px; }
+.status-active { background:rgba(74,222,128,0.15); color:var(--green); }
+.status-inactive { background:rgba(139,143,163,0.1); color:var(--text-dim); }
+.member-detail { padding:0 20px 20px; border-top:1px solid var(--border); }
+.member-detail .page-item { padding:8px 0; border-bottom:1px solid rgba(42,46,61,0.5); }
+.member-detail .page-item:last-child { border-bottom:none; }
+.member-detail .page-title { font-size:0.9rem; }
+.member-detail .page-meta { font-size:0.75rem; color:var(--text-dim); }
+.member-detail .page-desc { font-size:0.8rem; color:var(--text-dim); margin-top:4px; }
+.no-activity { color:var(--text-dim); font-size:0.85rem; font-style:italic; padding:12px 0; }
+
+.timeline { position:relative; padding-left:24px; }
+.timeline::before { content:''; position:absolute; left:8px; top:0; bottom:0; width:2px; background:var(--border); }
+.tl-item { position:relative; padding:8px 0 16px; }
+.tl-item::before { content:''; position:absolute; left:-20px; top:14px; width:10px; height:10px; border-radius:50%; background:var(--accent); border:2px solid var(--bg); }
+.tl-date { font-size:0.75rem; color:var(--text-dim); }
+.tl-content { font-size:0.85rem; }
+.tl-author { font-size:0.75rem; color:var(--accent); }
+
+footer { text-align:center; color:var(--text-dim); font-size:0.8rem; margin-top:48px; padding-top:24px; border-top:1px solid var(--border); }
+
+@media(max-width:768px) {
+  .stats-row { grid-template-columns:repeat(2,1fr); }
+  .projects, .members-grid { grid-template-columns:1fr; }
+}
+@media(max-width:480px) {
+  .stats-row { grid-template-columns:1fr; }
+  body { padding:12px; }
+}
+
+@keyframes slideDown { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+details[open] .member-detail { animation:slideDown 0.2s ease; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Acme Lab — Weekly Dashboard</h1>
+  <div class="date-range">2026-03-14 ~ 2026-03-20 &nbsp;|&nbsp; Generated: 2026-03-20 09:00 (demo)</div>
+</div>
+
+<div class="stats-row">
+  <div class="stat-card"><div class="stat-value">5</div><div class="stat-label">Active Projects</div></div>
+  <div class="stat-card"><div class="stat-value">8</div><div class="stat-label">Team Members</div></div>
+  <div class="stat-card"><div class="stat-value">3</div><div class="stat-label">Upcoming Deadlines</div></div>
+  <div class="stat-card"><div class="stat-value">17</div><div class="stat-label">Pages Updated</div></div>
+</div>
+
+<h2>Upcoming Deadlines</h2>
+<div class="deadlines">
+  <div class="deadline-card">
+    <div class="dl-info">
+      <h3>Paper submission — ICML 2026</h3>
+      <div class="dl-date">2026-04-03 (D-14)</div>
+    </div>
+    <span class="dl-badge badge-warn">14 days</span>
+  </div>
+  <div class="deadline-card">
+    <div class="dl-info">
+      <h3>Quarterly report draft</h3>
+      <div class="dl-date">2026-03-28 (D-8)</div>
+    </div>
+    <span class="dl-badge badge-urgent">8 days</span>
+  </div>
+  <div class="deadline-card">
+    <div class="dl-info">
+      <h3>Dataset release v2.0</h3>
+      <div class="dl-date">2026-04-15 (D-26)</div>
+    </div>
+    <span class="dl-badge badge-ok">26 days</span>
+  </div>
+</div>
+
+<h2>Project Activity</h2>
+<div class="projects">
+  <div class="project-card">
+    <h3>Transformer Fine-tuning Pipeline</h3>
+    <div class="project-meta">Last updated: 2026-03-20 &nbsp; <span class="tag tag-purple">ML</span></div>
+    <ul class="task-list">
+      <li class="task-done">Set up distributed training on 4×A100</li>
+      <li class="task-done">Implement LoRA adapter for base model</li>
+      <li class="task-doing">Run ablation study on learning rates</li>
+      <li class="task-todo">Write results section</li>
+    </ul>
+  </div>
+  <div class="project-card">
+    <h3>Benchmark Dataset Curation</h3>
+    <div class="project-meta">Last updated: 2026-03-19 &nbsp; <span class="tag tag-green">DATA</span></div>
+    <ul class="task-list">
+      <li class="task-done">Collect raw samples from 3 sources</li>
+      <li class="task-done">Quality filtering pipeline</li>
+      <li class="task-doing">Manual annotation (round 2)</li>
+      <li class="task-todo">Inter-annotator agreement analysis</li>
+      <li class="task-todo">Publish to HuggingFace</li>
+    </ul>
+  </div>
+  <div class="project-card">
+    <h3>API Server Refactoring</h3>
+    <div class="project-meta">Last updated: 2026-03-18 &nbsp; <span class="tag tag-orange">INFRA</span></div>
+    <ul class="task-list">
+      <li class="task-done">Migrate to FastAPI from Flask</li>
+      <li class="task-doing">Add authentication middleware</li>
+      <li class="task-todo">Load testing with k6</li>
+    </ul>
+  </div>
+  <div class="project-card">
+    <h3>Literature Review — Diffusion Models</h3>
+    <div class="project-meta">Last updated: 2026-03-17 &nbsp; <span class="tag">REVIEW</span></div>
+    <ul class="task-list">
+      <li class="task-done">Read 12 papers from ICLR 2026</li>
+      <li class="task-doing">Summarize key techniques</li>
+      <li class="task-todo">Compare with our approach</li>
+    </ul>
+  </div>
+  <div class="project-card">
+    <h3>Quarterly Report</h3>
+    <div class="project-meta">Last updated: 2026-03-20 &nbsp; <span class="tag tag-yellow">WRITING</span></div>
+    <ul class="task-list">
+      <li class="task-done">Outline all sections</li>
+      <li class="task-doing">Draft introduction and methods</li>
+      <li class="task-todo">Add figures and tables</li>
+      <li class="task-todo">PI review</li>
+    </ul>
+  </div>
+</div>
+
+<h2>Team Members</h2>
+<div class="members-grid">
+  <details class="member-card" open>
+    <summary>
+      <div class="member-avatar">AK</div>
+      <div><div class="member-name">Alice Kim</div><div class="member-role">PhD · Machine Learning</div></div>
+      <span class="member-status status-active">active</span>
+    </summary>
+    <div class="member-detail">
+      <div class="page-item">
+        <div class="page-title"><a href="#">Transformer Fine-tuning Pipeline — Ablation Results</a></div>
+        <div class="page-meta">Modified: 2026-03-20</div>
+        <div class="page-desc">Updated learning rate sweep results; added comparison table with baseline</div>
+      </div>
+      <div class="page-item">
+        <div class="page-title"><a href="#">ICML 2026 Draft — Methods Section</a></div>
+        <div class="page-meta">Modified: 2026-03-19</div>
+        <div class="page-desc">Rewrote training procedure description; added architecture diagram</div>
+      </div>
+      <div class="page-item">
+        <div class="page-title"><a href="#">Weekly Meeting Notes (03-17)</a></div>
+        <div class="page-meta">Modified: 2026-03-17</div>
+        <div class="page-desc">Discussion on evaluation metrics; action items assigned</div>
+      </div>
+    </div>
+  </details>
+
+  <details class="member-card">
+    <summary>
+      <div class="member-avatar">BL</div>
+      <div><div class="member-name">Bob Lee</div><div class="member-role">Research Engineer</div></div>
+      <span class="member-status status-active">active</span>
+    </summary>
+    <div class="member-detail">
+      <div class="page-item">
+        <div class="page-title"><a href="#">API Server Refactoring — FastAPI Migration</a></div>
+        <div class="page-meta">Modified: 2026-03-18</div>
+        <div class="page-desc">Completed endpoint migration; auth middleware in progress</div>
+      </div>
+      <div class="page-item">
+        <div class="page-title"><a href="#">Infrastructure Cost Report</a></div>
+        <div class="page-meta">Modified: 2026-03-16</div>
+        <div class="page-desc">Monthly GPU usage summary; cost optimization suggestions</div>
+      </div>
+    </div>
+  </details>
+
+  <details class="member-card">
+    <summary>
+      <div class="member-avatar">CP</div>
+      <div><div class="member-name">Carol Park</div><div class="member-role">MS · Data Engineering</div></div>
+      <span class="member-status status-active">active</span>
+    </summary>
+    <div class="member-detail">
+      <div class="page-item">
+        <div class="page-title"><a href="#">Benchmark Dataset — Annotation Guide v2</a></div>
+        <div class="page-meta">Modified: 2026-03-19</div>
+        <div class="page-desc">Updated labeling criteria; added edge case examples</div>
+      </div>
+      <div class="page-item">
+        <div class="page-title"><a href="#">Data Pipeline — Quality Filters</a></div>
+        <div class="page-meta">Modified: 2026-03-17</div>
+        <div class="page-desc">Implemented deduplication and length filtering stages</div>
+      </div>
+    </div>
+  </details>
+
+  <details class="member-card">
+    <summary>
+      <div class="member-avatar">DM</div>
+      <div><div class="member-name">Dave Moon</div><div class="member-role">PhD · NLP</div></div>
+      <span class="member-status status-active">active</span>
+    </summary>
+    <div class="member-detail">
+      <div class="page-item">
+        <div class="page-title"><a href="#">Literature Review — Diffusion Models</a></div>
+        <div class="page-meta">Modified: 2026-03-17</div>
+        <div class="page-desc">Added summaries for 5 new ICLR papers on conditional generation</div>
+      </div>
+    </div>
+  </details>
+
+  <details class="member-card">
+    <summary>
+      <div class="member-avatar">EJ</div>
+      <div><div class="member-name">Eve Jung</div><div class="member-role">MS · Computer Vision</div></div>
+      <span class="member-status status-active">active</span>
+    </summary>
+    <div class="member-detail">
+      <div class="page-item">
+        <div class="page-title"><a href="#">Quarterly Report — Figures</a></div>
+        <div class="page-meta">Modified: 2026-03-20</div>
+        <div class="page-desc">Created 4 visualization figures for the report draft</div>
+      </div>
+    </div>
+  </details>
+
+  <details class="member-card">
+    <summary>
+      <div class="member-avatar">FS</div>
+      <div><div class="member-name">Frank Song</div><div class="member-role">Intern (since 2026-01)</div></div>
+      <span class="member-status status-active">active</span>
+    </summary>
+    <div class="member-detail">
+      <div class="page-item">
+        <div class="page-title"><a href="#">Study Notes — Attention Mechanisms</a></div>
+        <div class="page-meta">Modified: 2026-03-18</div>
+        <div class="page-desc">Completed chapter on multi-head attention; started flash attention review</div>
+      </div>
+      <div class="page-item">
+        <div class="page-title"><a href="#">Intern Onboarding Checklist</a></div>
+        <div class="page-meta">Modified: 2026-03-15</div>
+        <div class="page-desc">Completed environment setup and first code walkthrough</div>
+      </div>
+    </div>
+  </details>
+
+  <details class="member-card">
+    <summary>
+      <div class="member-avatar">GH</div>
+      <div><div class="member-name">Grace Han</div><div class="member-role">MS · Bioinformatics</div></div>
+      <span class="member-status status-inactive">inactive</span>
+    </summary>
+    <div class="member-detail">
+      <div class="no-activity">No activity detected this week</div>
+    </div>
+  </details>
+
+  <details class="member-card">
+    <summary>
+      <div class="member-avatar">HO</div>
+      <div><div class="member-name">Henry Oh</div><div class="member-role">Intern (since 2025-11)</div></div>
+      <span class="member-status status-inactive">inactive</span>
+    </summary>
+    <div class="member-detail">
+      <div class="no-activity">No activity detected this week</div>
+    </div>
+  </details>
+</div>
+
+<h2>Activity Timeline</h2>
+<div class="timeline">
+  <div class="tl-item">
+    <div class="tl-date">2026-03-20 (Thu)</div>
+    <div class="tl-content">Ablation study results updated — comparison table added</div>
+    <div class="tl-author">Alice Kim</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-date">2026-03-20 (Thu)</div>
+    <div class="tl-content">Quarterly report figures created</div>
+    <div class="tl-author">Eve Jung</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-date">2026-03-19 (Wed)</div>
+    <div class="tl-content">ICML draft methods section rewritten</div>
+    <div class="tl-author">Alice Kim</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-date">2026-03-19 (Wed)</div>
+    <div class="tl-content">Annotation guide v2 with updated criteria</div>
+    <div class="tl-author">Carol Park</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-date">2026-03-18 (Tue)</div>
+    <div class="tl-content">FastAPI migration completed</div>
+    <div class="tl-author">Bob Lee</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-date">2026-03-18 (Tue)</div>
+    <div class="tl-content">Attention mechanisms study notes updated</div>
+    <div class="tl-author">Frank Song</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-date">2026-03-17 (Mon)</div>
+    <div class="tl-content">Weekly meeting notes — evaluation metrics discussion</div>
+    <div class="tl-author">Alice Kim</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-date">2026-03-17 (Mon)</div>
+    <div class="tl-content">Data quality filtering pipeline implemented</div>
+    <div class="tl-author">Carol Park</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-date">2026-03-17 (Mon)</div>
+    <div class="tl-content">Literature review — 5 ICLR 2026 papers summarized</div>
+    <div class="tl-author">Dave Moon</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-date">2026-03-16 (Sun)</div>
+    <div class="tl-content">Monthly GPU cost report published</div>
+    <div class="tl-author">Bob Lee</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-date">2026-03-15 (Sat)</div>
+    <div class="tl-content">Intern onboarding checklist completed</div>
+    <div class="tl-author">Frank Song</div>
+  </div>
+</div>
+
+<footer>
+  <p>Generated by <strong>notion-team-dashboard</strong> — this is a demo with sample data</p>
+  <p>Powered by Claude Code CLI + Notion MCP</p>
+</footer>
+
+</body>
+</html>

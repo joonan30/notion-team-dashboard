@@ -1,0 +1,21 @@
+# Generated output
+dashboard.html
+dashboard_gen.log
+launchd_out.log
+launchd_err.log
+
+# Secrets & local config
+.env
+config.json
+
+# Claude Code internals
+.claude/
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+
+# Node
+node_modules/

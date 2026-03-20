@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>notion-team-dashboard — Weekly Team Activity Dashboard from Notion</title>
+<meta name="description" content="Auto-generate a beautiful weekly activity dashboard from your team's Notion workspace. Powered by Claude Code CLI and Notion MCP. Zero backend, zero database.">
+<style>
+:root {
+  --bg: #0a0b10;
+  --surface: #12141d;
+  --surface-2: #1a1d27;
+  --border: #2a2e3d;
+  --text: #e4e6ef;
+  --text-dim: #8b8fa3;
+  --accent: #6c8cff;
+  --accent-glow: rgba(108,140,255,0.2);
+  --green: #4ade80;
+  --yellow: #facc15;
+  --purple: #a78bfa;
+  --radius: 12px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; line-height:1.7; }
+a { color:var(--accent); text-decoration:none; }
+a:hover { text-decoration:underline; }
+code { background:var(--surface-2); padding:2px 6px; border-radius:4px; font-size:0.9em; font-family:'SF Mono',Monaco,Consolas,monospace; }
+
+/* Hero */
+.hero {
+  text-align:center;
+  padding:80px 24px 60px;
+  background:linear-gradient(180deg, rgba(108,140,255,0.06) 0%, transparent 100%);
+}
+.hero h1 {
+  font-size:2.8rem;
+  font-weight:800;
+  margin-bottom:12px;
+  letter-spacing:-0.02em;
+}
+.hero h1 span { color:var(--accent); }
+.hero .tagline {
+  font-size:1.15rem;
+  color:var(--text-dim);
+  max-width:600px;
+  margin:0 auto 32px;
+}
+.hero-buttons { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+.btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:12px 28px; border-radius:8px; font-size:0.95rem; font-weight:600;
+  transition:all 0.2s;
+}
+.btn-primary { background:var(--accent); color:#fff; }
+.btn-primary:hover { background:#5a7ae6; text-decoration:none; }
+.btn-secondary { background:var(--surface-2); color:var(--text); border:1px solid var(--border); }
+.btn-secondary:hover { border-color:var(--accent); text-decoration:none; }
+
+/* Architecture */
+.arch {
+  max-width:680px; margin:0 auto 60px;
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:24px 32px; font-family:'SF Mono',Monaco,Consolas,monospace; font-size:0.85rem;
+  color:var(--text-dim); line-height:2;
+}
+.arch .highlight { color:var(--accent); }
+.arch .dim { color:#555; }
+
+/* Features */
+.section { max-width:960px; margin:0 auto; padding:60px 24px; }
+.section h2 { font-size:1.6rem; font-weight:700; margin-bottom:32px; text-align:center; }
+.features-grid {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:20px;
+}
+.feature-card {
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:24px;
+}
+.feature-card .icon { font-size:1.5rem; margin-bottom:12px; }
+.feature-card h3 { font-size:1rem; font-weight:600; margin-bottom:8px; }
+.feature-card p { font-size:0.85rem; color:var(--text-dim); }
+
+/* Demo */
+.demo-section {
+  max-width:1200px; margin:0 auto; padding:60px 24px;
+}
+.demo-section h2 { font-size:1.6rem; font-weight:700; margin-bottom:12px; text-align:center; }
+.demo-section .demo-subtitle { text-align:center; color:var(--text-dim); font-size:0.9rem; margin-bottom:24px; }
+.demo-frame {
+  border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;
+  box-shadow:0 0 60px rgba(108,140,255,0.08);
+}
+.demo-frame iframe {
+  width:100%; height:700px; border:none; background:var(--bg);
+}
+.demo-bar {
+  background:var(--surface-2); padding:8px 16px; display:flex; align-items:center; gap:8px;
+  border-bottom:1px solid var(--border);
+}
+.demo-dot { width:10px; height:10px; border-radius:50%; }
+.dot-red { background:#ff5f57; }
+.dot-yellow { background:#febc2e; }
+.dot-green { background:#28c840; }
+.demo-url { color:var(--text-dim); font-size:0.75rem; margin-left:12px; font-family:monospace; }
+
+/* Quick Start */
+.quickstart { max-width:720px; margin:0 auto; padding:60px 24px; }
+.quickstart h2 { font-size:1.6rem; font-weight:700; margin-bottom:32px; text-align:center; }
+.step {
+  display:flex; gap:16px; margin-bottom:28px;
+}
+.step-num {
+  width:32px; height:32px; border-radius:50%; background:var(--accent);
+  display:flex; align-items:center; justify-content:center;
+  font-weight:700; font-size:0.85rem; flex-shrink:0; color:#fff;
+}
+.step-content h3 { font-size:0.95rem; font-weight:600; margin-bottom:4px; }
+.step-content p { font-size:0.85rem; color:var(--text-dim); }
+pre {
+  background:var(--surface); border:1px solid var(--border); border-radius:8px;
+  padding:16px; overflow-x:auto; margin:8px 0;
+  font-family:'SF Mono',Monaco,Consolas,monospace; font-size:0.8rem; color:var(--text-dim); line-height:1.8;
+}
+pre .comment { color:#555; }
+pre .cmd { color:var(--green); }
+
+/* How it works */
+.how-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; text-align:center; }
+.how-card { padding:24px; }
+.how-card .how-icon { font-size:2rem; margin-bottom:12px; }
+.how-card h3 { font-size:0.95rem; margin-bottom:8px; }
+.how-card p { font-size:0.8rem; color:var(--text-dim); }
+.how-arrow { display:flex; align-items:center; justify-content:center; color:var(--text-dim); font-size:1.5rem; }
+
+/* Footer */
+footer {
+  text-align:center; padding:40px 24px; border-top:1px solid var(--border);
+  color:var(--text-dim); font-size:0.8rem;
+}
+footer a { color:var(--accent); }
+
+@media(max-width:768px) {
+  .hero h1 { font-size:2rem; }
+  .features-grid { grid-template-columns:1fr; }
+  .how-grid { grid-template-columns:1fr; }
+  .how-arrow { transform:rotate(90deg); }
+  .demo-frame iframe { height:400px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <h1><span>notion-team-dashboard</span></h1>
+  <p class="tagline">Auto-generate a weekly activity dashboard from your team's Notion workspace. Zero backend. Zero database. Just one script.</p>
+  <div class="hero-buttons">
+    <a href="#demo" class="btn btn-primary">See Live Demo</a>
+    <a href="https://github.com/joonan30/notion-team-dashboard" class="btn btn-secondary">View on GitHub</a>
+  </div>
+</section>
+
+<!-- Architecture one-liner -->
+<div class="arch">
+  <span class="dim">$</span> <span class="highlight">./generate_dashboard.sh</span><br>
+  &nbsp;&nbsp;<span class="dim">&rarr;</span> claude --print <span class="dim">(Claude Code CLI)</span><br>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span class="dim">&rarr;</span> Notion MCP <span class="dim">(search, fetch per member)</span><br>
+  &nbsp;&nbsp;&nbsp;&nbsp;<span class="dim">&rarr;</span> <span class="highlight">dashboard.html</span> <span class="dim">&larr; single self-contained file</span>
+</div>
+
+<!-- Features -->
+<section class="section">
+  <h2>Features</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="icon">&#x1f4ca;</div>
+      <h3>Stats Overview</h3>
+      <p>Active projects, team members, upcoming deadlines, and pages updated at a glance.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">&#x1f465;</div>
+      <h3>Member Activity Cards</h3>
+      <p>Expandable cards for each team member showing their updated pages, to-do items, and direct Notion links.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">&#x1f4c5;</div>
+      <h3>Deadline Tracker</h3>
+      <p>Countdown badges for upcoming deadlines extracted from your Notion pages.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">&#x1f4cb;</div>
+      <h3>Project Progress</h3>
+      <p>Task breakdown per project: done, in progress, and to-do items with visual indicators.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">&#x23f0;</div>
+      <h3>Activity Timeline</h3>
+      <p>Chronological view of all workspace changes across team members.</p>
+    </div>
+    <div class="feature-card">
+      <div class="icon">&#x1f504;</div>
+      <h3>Fully Automated</h3>
+      <p>Schedule with cron or launchd. Runs every Friday (or whenever you want) with zero manual effort.</p>
+    </div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="section">
+  <h2>How It Works</h2>
+  <div class="how-grid">
+    <div class="how-card">
+      <div class="how-icon">&#x1f4dd;</div>
+      <h3>1. Configure</h3>
+      <p>List your team members and their Notion page IDs in <code>config.json</code></p>
+    </div>
+    <div class="how-card">
+      <div class="how-icon">&#x1f916;</div>
+      <h3>2. Claude Queries Notion</h3>
+      <p>Claude Code CLI uses the Notion MCP server to search and fetch each member's recent activity</p>
+    </div>
+    <div class="how-card">
+      <div class="how-icon">&#x1f310;</div>
+      <h3>3. Dashboard Generated</h3>
+      <p>A single self-contained HTML file with dark theme, interactive cards, and direct Notion links</p>
+    </div>
+  </div>
+</section>
+
+<!-- Live Demo -->
+<section class="demo-section" id="demo">
+  <h2>Live Demo</h2>
+  <p class="demo-subtitle">Interactive dashboard with sample data — click on member cards to expand</p>
+  <div class="demo-frame">
+    <div class="demo-bar">
+      <span class="demo-dot dot-red"></span>
+      <span class="demo-dot dot-yellow"></span>
+      <span class="demo-dot dot-green"></span>
+      <span class="demo-url">dashboard.html</span>
+    </div>
+    <iframe src="demo.html" title="Dashboard Demo"></iframe>
+  </div>
+</section>
+
+<!-- Quick Start -->
+<section class="quickstart">
+  <h2>Quick Start</h2>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <h3>Create a Notion Integration</h3>
+      <p>Go to <a href="https://www.notion.so/my-integrations">notion.so/my-integrations</a>, create an internal integration, and copy the token (<code>ntn_...</code>). Share your workspace pages with it.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <h3>Configure Claude Code with Notion MCP</h3>
+      <p>Add to <code>~/.claude/settings.json</code>:</p>
+      <pre><code>{
+  <span class="comment">"mcpServers"</span>: {
+    <span class="comment">"notion"</span>: {
+      "command": "npx",
+      "args": ["-y", "@notionhq/notion-mcp-server"],
+      "env": {
+        "OPENAPI_MCP_HEADERS": "{\"Authorization\": \"Bearer <span class="cmd">ntn_YOUR_TOKEN</span>\"...}"
+      }
+    }
+  }
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <h3>Clone & Configure</h3>
+      <pre><code><span class="cmd">git clone</span> https://github.com/joonan30/notion-team-dashboard.git
+<span class="cmd">cd</span> notion-team-dashboard
+<span class="cmd">cp</span> config.example.json config.json
+<span class="comment"># Edit config.json with your team members and Notion page IDs</span></code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-content">
+      <h3>Generate</h3>
+      <pre><code><span class="cmd">./generate_dashboard.sh</span>
+<span class="cmd">open</span> dashboard.html</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- Requirements -->
+<section class="section">
+  <h2>Requirements</h2>
+  <div class="features-grid" style="grid-template-columns:repeat(2,1fr);">
+    <div class="feature-card">
+      <h3>Claude Code CLI</h3>
+      <p>The <code>claude</code> command must be installed and on your PATH. <a href="https://claude.com/claude-code">Get it here</a>.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Node.js 18+</h3>
+      <p>Required for the Notion MCP server (<code>npx @notionhq/notion-mcp-server</code>).</p>
+    </div>
+    <div class="feature-card">
+      <h3>Notion Workspace</h3>
+      <p>With an internal integration that has read access to team pages.</p>
+    </div>
+    <div class="feature-card">
+      <h3>Python 3</h3>
+      <p>For config parsing in the shell script. Pre-installed on macOS and most Linux distributions.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p><strong>notion-team-dashboard</strong> &mdash; MIT License</p>
+  <p>Powered by <a href="https://claude.com/claude-code">Claude Code</a> + <a href="https://github.com/makenotion/notion-mcp-server">Notion MCP Server</a></p>
+</footer>
+
+</body>
+</html>
