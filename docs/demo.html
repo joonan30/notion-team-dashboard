@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Acme Lab — Weekly Dashboard</title>
+<title>우리 연구실 — 주간 대시보드</title>
 <style>
 :root {
   --bg: #0f1117;
@@ -22,7 +22,7 @@
   --radius: 12px;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; line-height:1.6; padding:24px; max-width:1280px; margin:0 auto; }
+body { background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans KR',sans-serif; line-height:1.6; padding:24px; max-width:1280px; margin:0 auto; }
 a { color:var(--accent); text-decoration:none; }
 a:hover { text-decoration:underline; }
 
@@ -59,16 +59,16 @@ h2 { font-size:1.3rem; font-weight:600; margin:32px 0 16px; padding-bottom:8px; 
 .task-list { list-style:none; font-size:0.85rem; }
 .task-list li { padding:3px 0; }
 .task-list li::before { margin-right:8px; }
-.task-done::before { content:"✓"; color:var(--green); font-weight:bold; }
-.task-doing::before { content:"→"; color:var(--yellow); font-weight:bold; }
-.task-todo::before { content:"○"; color:var(--text-dim); }
+.task-done::before { content:"\2713"; color:var(--green); font-weight:bold; }
+.task-doing::before { content:"\2192"; color:var(--yellow); font-weight:bold; }
+.task-todo::before { content:"\25CB"; color:var(--text-dim); }
 
 .members-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; }
 details.member-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; }
 details.member-card[open] { border-color:var(--accent-dim); }
 details.member-card summary { padding:16px 20px; cursor:pointer; display:flex; align-items:center; gap:12px; list-style:none; }
 details.member-card summary::-webkit-details-marker { display:none; }
-details.member-card summary::after { content:"▸"; margin-left:auto; color:var(--text-dim); transition:transform 0.2s; }
+details.member-card summary::after { content:"\25B8"; margin-left:auto; color:var(--text-dim); transition:transform 0.2s; }
 details.member-card[open] summary::after { transform:rotate(90deg); }
 .member-avatar { width:36px; height:36px; border-radius:50%; background:var(--accent-dim); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem; flex-shrink:0; }
 .member-name { font-weight:600; font-size:0.95rem; }
@@ -110,297 +110,297 @@ details[open] .member-detail { animation:slideDown 0.2s ease; }
 <body>
 
 <div class="header">
-  <h1>Acme Lab — Weekly Dashboard</h1>
-  <div class="date-range">2026-03-14 ~ 2026-03-20 &nbsp;|&nbsp; Generated: 2026-03-20 09:00 (demo)</div>
+  <h1>우리 연구실 — 주간 대시보드</h1>
+  <div class="date-range">2026-03-14 ~ 2026-03-20 &nbsp;|&nbsp; 생성: 2026-03-20 09:00 (데모)</div>
 </div>
 
 <div class="stats-row">
-  <div class="stat-card"><div class="stat-value">5</div><div class="stat-label">Active Projects</div></div>
-  <div class="stat-card"><div class="stat-value">8</div><div class="stat-label">Team Members</div></div>
-  <div class="stat-card"><div class="stat-value">3</div><div class="stat-label">Upcoming Deadlines</div></div>
-  <div class="stat-card"><div class="stat-value">17</div><div class="stat-label">Pages Updated</div></div>
+  <div class="stat-card"><div class="stat-value">5</div><div class="stat-label">활성 프로젝트</div></div>
+  <div class="stat-card"><div class="stat-value">8</div><div class="stat-label">팀원</div></div>
+  <div class="stat-card"><div class="stat-value">3</div><div class="stat-label">다가오는 마감일</div></div>
+  <div class="stat-card"><div class="stat-value">17</div><div class="stat-label">업데이트된 페이지</div></div>
 </div>
 
-<h2>Upcoming Deadlines</h2>
+<h2>다가오는 마감일</h2>
 <div class="deadlines">
   <div class="deadline-card">
     <div class="dl-info">
-      <h3>Paper submission — ICML 2026</h3>
+      <h3>논문 제출 — ICML 2026</h3>
       <div class="dl-date">2026-04-03 (D-14)</div>
     </div>
-    <span class="dl-badge badge-warn">14 days</span>
+    <span class="dl-badge badge-warn">14일</span>
   </div>
   <div class="deadline-card">
     <div class="dl-info">
-      <h3>Quarterly report draft</h3>
+      <h3>분기 보고서 초안</h3>
       <div class="dl-date">2026-03-28 (D-8)</div>
     </div>
-    <span class="dl-badge badge-urgent">8 days</span>
+    <span class="dl-badge badge-urgent">8일</span>
   </div>
   <div class="deadline-card">
     <div class="dl-info">
-      <h3>Dataset release v2.0</h3>
+      <h3>데이터셋 공개 v2.0</h3>
       <div class="dl-date">2026-04-15 (D-26)</div>
     </div>
-    <span class="dl-badge badge-ok">26 days</span>
+    <span class="dl-badge badge-ok">26일</span>
   </div>
 </div>
 
-<h2>Project Activity</h2>
+<h2>프로젝트 활동</h2>
 <div class="projects">
   <div class="project-card">
-    <h3>Transformer Fine-tuning Pipeline</h3>
-    <div class="project-meta">Last updated: 2026-03-20 &nbsp; <span class="tag tag-purple">ML</span></div>
+    <h3>Transformer 파인튜닝 파이프라인</h3>
+    <div class="project-meta">최종 수정: 2026-03-20 &nbsp; <span class="tag tag-purple">ML</span></div>
     <ul class="task-list">
-      <li class="task-done">Set up distributed training on 4×A100</li>
-      <li class="task-done">Implement LoRA adapter for base model</li>
-      <li class="task-doing">Run ablation study on learning rates</li>
-      <li class="task-todo">Write results section</li>
+      <li class="task-done">4xA100 분산 학습 환경 구축</li>
+      <li class="task-done">베이스 모델 LoRA 어댑터 구현</li>
+      <li class="task-doing">학습률 ablation study 진행중</li>
+      <li class="task-todo">결과 섹션 작성</li>
     </ul>
   </div>
   <div class="project-card">
-    <h3>Benchmark Dataset Curation</h3>
-    <div class="project-meta">Last updated: 2026-03-19 &nbsp; <span class="tag tag-green">DATA</span></div>
+    <h3>벤치마크 데이터셋 구축</h3>
+    <div class="project-meta">최종 수정: 2026-03-19 &nbsp; <span class="tag tag-green">DATA</span></div>
     <ul class="task-list">
-      <li class="task-done">Collect raw samples from 3 sources</li>
-      <li class="task-done">Quality filtering pipeline</li>
-      <li class="task-doing">Manual annotation (round 2)</li>
-      <li class="task-todo">Inter-annotator agreement analysis</li>
-      <li class="task-todo">Publish to HuggingFace</li>
+      <li class="task-done">3개 소스에서 원시 데이터 수집</li>
+      <li class="task-done">품질 필터링 파이프라인 완성</li>
+      <li class="task-doing">수작업 어노테이션 (2차)</li>
+      <li class="task-todo">평가자 간 일치도 분석</li>
+      <li class="task-todo">HuggingFace 공개</li>
     </ul>
   </div>
   <div class="project-card">
-    <h3>API Server Refactoring</h3>
-    <div class="project-meta">Last updated: 2026-03-18 &nbsp; <span class="tag tag-orange">INFRA</span></div>
+    <h3>API 서버 리팩토링</h3>
+    <div class="project-meta">최종 수정: 2026-03-18 &nbsp; <span class="tag tag-orange">INFRA</span></div>
     <ul class="task-list">
-      <li class="task-done">Migrate to FastAPI from Flask</li>
-      <li class="task-doing">Add authentication middleware</li>
-      <li class="task-todo">Load testing with k6</li>
+      <li class="task-done">Flask → FastAPI 마이그레이션</li>
+      <li class="task-doing">인증 미들웨어 추가</li>
+      <li class="task-todo">k6 부하 테스트</li>
     </ul>
   </div>
   <div class="project-card">
-    <h3>Literature Review — Diffusion Models</h3>
-    <div class="project-meta">Last updated: 2026-03-17 &nbsp; <span class="tag">REVIEW</span></div>
+    <h3>문헌 조사 — Diffusion Models</h3>
+    <div class="project-meta">최종 수정: 2026-03-17 &nbsp; <span class="tag">REVIEW</span></div>
     <ul class="task-list">
-      <li class="task-done">Read 12 papers from ICLR 2026</li>
-      <li class="task-doing">Summarize key techniques</li>
-      <li class="task-todo">Compare with our approach</li>
+      <li class="task-done">ICLR 2026 논문 12편 읽기 완료</li>
+      <li class="task-doing">핵심 기법 정리중</li>
+      <li class="task-todo">우리 방법론과 비교</li>
     </ul>
   </div>
   <div class="project-card">
-    <h3>Quarterly Report</h3>
-    <div class="project-meta">Last updated: 2026-03-20 &nbsp; <span class="tag tag-yellow">WRITING</span></div>
+    <h3>분기 보고서</h3>
+    <div class="project-meta">최종 수정: 2026-03-20 &nbsp; <span class="tag tag-yellow">WRITING</span></div>
     <ul class="task-list">
-      <li class="task-done">Outline all sections</li>
-      <li class="task-doing">Draft introduction and methods</li>
-      <li class="task-todo">Add figures and tables</li>
-      <li class="task-todo">PI review</li>
+      <li class="task-done">전체 섹션 아웃라인 완성</li>
+      <li class="task-doing">서론 및 방법론 초안 작성중</li>
+      <li class="task-todo">그림 및 표 추가</li>
+      <li class="task-todo">PI 리뷰</li>
     </ul>
   </div>
 </div>
 
-<h2>Team Members</h2>
+<h2>팀원</h2>
 <div class="members-grid">
   <details class="member-card" open>
     <summary>
-      <div class="member-avatar">AK</div>
-      <div><div class="member-name">Alice Kim</div><div class="member-role">PhD · Machine Learning</div></div>
-      <span class="member-status status-active">active</span>
+      <div class="member-avatar">홍</div>
+      <div><div class="member-name">홍길동</div><div class="member-role">PhD · 기계학습</div></div>
+      <span class="member-status status-active">활동중</span>
     </summary>
     <div class="member-detail">
       <div class="page-item">
-        <div class="page-title"><a href="#">Transformer Fine-tuning Pipeline — Ablation Results</a></div>
-        <div class="page-meta">Modified: 2026-03-20</div>
-        <div class="page-desc">Updated learning rate sweep results; added comparison table with baseline</div>
+        <div class="page-title"><a href="#">Transformer 파인튜닝 — Ablation 결과</a></div>
+        <div class="page-meta">수정: 2026-03-20</div>
+        <div class="page-desc">학습률 스윕 결과 업데이트; 베이스라인 비교 테이블 추가</div>
       </div>
       <div class="page-item">
-        <div class="page-title"><a href="#">ICML 2026 Draft — Methods Section</a></div>
-        <div class="page-meta">Modified: 2026-03-19</div>
-        <div class="page-desc">Rewrote training procedure description; added architecture diagram</div>
+        <div class="page-title"><a href="#">ICML 2026 초안 — 방법론 섹션</a></div>
+        <div class="page-meta">수정: 2026-03-19</div>
+        <div class="page-desc">학습 절차 기술 수정; 아키텍처 다이어그램 추가</div>
       </div>
       <div class="page-item">
-        <div class="page-title"><a href="#">Weekly Meeting Notes (03-17)</a></div>
-        <div class="page-meta">Modified: 2026-03-17</div>
-        <div class="page-desc">Discussion on evaluation metrics; action items assigned</div>
+        <div class="page-title"><a href="#">주간 미팅 노트 (03-17)</a></div>
+        <div class="page-meta">수정: 2026-03-17</div>
+        <div class="page-desc">평가 지표 논의; 액션 아이템 배정</div>
       </div>
     </div>
   </details>
 
   <details class="member-card">
     <summary>
-      <div class="member-avatar">BL</div>
-      <div><div class="member-name">Bob Lee</div><div class="member-role">Research Engineer</div></div>
-      <span class="member-status status-active">active</span>
+      <div class="member-avatar">이</div>
+      <div><div class="member-name">이영희</div><div class="member-role">연구원</div></div>
+      <span class="member-status status-active">활동중</span>
     </summary>
     <div class="member-detail">
       <div class="page-item">
-        <div class="page-title"><a href="#">API Server Refactoring — FastAPI Migration</a></div>
-        <div class="page-meta">Modified: 2026-03-18</div>
-        <div class="page-desc">Completed endpoint migration; auth middleware in progress</div>
+        <div class="page-title"><a href="#">API 서버 리팩토링 — FastAPI 마이그레이션</a></div>
+        <div class="page-meta">수정: 2026-03-18</div>
+        <div class="page-desc">엔드포인트 마이그레이션 완료; 인증 미들웨어 진행중</div>
       </div>
       <div class="page-item">
-        <div class="page-title"><a href="#">Infrastructure Cost Report</a></div>
-        <div class="page-meta">Modified: 2026-03-16</div>
-        <div class="page-desc">Monthly GPU usage summary; cost optimization suggestions</div>
+        <div class="page-title"><a href="#">인프라 비용 보고서</a></div>
+        <div class="page-meta">수정: 2026-03-16</div>
+        <div class="page-desc">월간 GPU 사용량 요약; 비용 최적화 제안</div>
       </div>
     </div>
   </details>
 
   <details class="member-card">
     <summary>
-      <div class="member-avatar">CP</div>
-      <div><div class="member-name">Carol Park</div><div class="member-role">MS · Data Engineering</div></div>
-      <span class="member-status status-active">active</span>
+      <div class="member-avatar">김</div>
+      <div><div class="member-name">김철수</div><div class="member-role">MS · 데이터 엔지니어링</div></div>
+      <span class="member-status status-active">활동중</span>
     </summary>
     <div class="member-detail">
       <div class="page-item">
-        <div class="page-title"><a href="#">Benchmark Dataset — Annotation Guide v2</a></div>
-        <div class="page-meta">Modified: 2026-03-19</div>
-        <div class="page-desc">Updated labeling criteria; added edge case examples</div>
+        <div class="page-title"><a href="#">벤치마크 데이터셋 — 어노테이션 가이드 v2</a></div>
+        <div class="page-meta">수정: 2026-03-19</div>
+        <div class="page-desc">레이블링 기준 업데이트; 엣지 케이스 예시 추가</div>
       </div>
       <div class="page-item">
-        <div class="page-title"><a href="#">Data Pipeline — Quality Filters</a></div>
-        <div class="page-meta">Modified: 2026-03-17</div>
-        <div class="page-desc">Implemented deduplication and length filtering stages</div>
-      </div>
-    </div>
-  </details>
-
-  <details class="member-card">
-    <summary>
-      <div class="member-avatar">DM</div>
-      <div><div class="member-name">Dave Moon</div><div class="member-role">PhD · NLP</div></div>
-      <span class="member-status status-active">active</span>
-    </summary>
-    <div class="member-detail">
-      <div class="page-item">
-        <div class="page-title"><a href="#">Literature Review — Diffusion Models</a></div>
-        <div class="page-meta">Modified: 2026-03-17</div>
-        <div class="page-desc">Added summaries for 5 new ICLR papers on conditional generation</div>
+        <div class="page-title"><a href="#">데이터 파이프라인 — 품질 필터</a></div>
+        <div class="page-meta">수정: 2026-03-17</div>
+        <div class="page-desc">중복 제거 및 길이 필터링 단계 구현</div>
       </div>
     </div>
   </details>
 
   <details class="member-card">
     <summary>
-      <div class="member-avatar">EJ</div>
-      <div><div class="member-name">Eve Jung</div><div class="member-role">MS · Computer Vision</div></div>
-      <span class="member-status status-active">active</span>
+      <div class="member-avatar">정</div>
+      <div><div class="member-name">정다은</div><div class="member-role">PhD · NLP</div></div>
+      <span class="member-status status-active">활동중</span>
     </summary>
     <div class="member-detail">
       <div class="page-item">
-        <div class="page-title"><a href="#">Quarterly Report — Figures</a></div>
-        <div class="page-meta">Modified: 2026-03-20</div>
-        <div class="page-desc">Created 4 visualization figures for the report draft</div>
+        <div class="page-title"><a href="#">문헌 조사 — Diffusion Models</a></div>
+        <div class="page-meta">수정: 2026-03-17</div>
+        <div class="page-desc">ICLR 2026 조건부 생성 논문 5편 요약 추가</div>
       </div>
     </div>
   </details>
 
   <details class="member-card">
     <summary>
-      <div class="member-avatar">FS</div>
-      <div><div class="member-name">Frank Song</div><div class="member-role">Intern (since 2026-01)</div></div>
-      <span class="member-status status-active">active</span>
+      <div class="member-avatar">윤</div>
+      <div><div class="member-name">윤서연</div><div class="member-role">MS · 컴퓨터 비전</div></div>
+      <span class="member-status status-active">활동중</span>
     </summary>
     <div class="member-detail">
       <div class="page-item">
-        <div class="page-title"><a href="#">Study Notes — Attention Mechanisms</a></div>
-        <div class="page-meta">Modified: 2026-03-18</div>
-        <div class="page-desc">Completed chapter on multi-head attention; started flash attention review</div>
-      </div>
-      <div class="page-item">
-        <div class="page-title"><a href="#">Intern Onboarding Checklist</a></div>
-        <div class="page-meta">Modified: 2026-03-15</div>
-        <div class="page-desc">Completed environment setup and first code walkthrough</div>
+        <div class="page-title"><a href="#">분기 보고서 — 그림 작업</a></div>
+        <div class="page-meta">수정: 2026-03-20</div>
+        <div class="page-desc">보고서용 시각화 그림 4개 작성</div>
       </div>
     </div>
   </details>
 
   <details class="member-card">
     <summary>
-      <div class="member-avatar">GH</div>
-      <div><div class="member-name">Grace Han</div><div class="member-role">MS · Bioinformatics</div></div>
-      <span class="member-status status-inactive">inactive</span>
+      <div class="member-avatar">박</div>
+      <div><div class="member-name">박민수</div><div class="member-role">인턴 (2026-01~)</div></div>
+      <span class="member-status status-active">활동중</span>
     </summary>
     <div class="member-detail">
-      <div class="no-activity">No activity detected this week</div>
+      <div class="page-item">
+        <div class="page-title"><a href="#">스터디 노트 — Attention Mechanisms</a></div>
+        <div class="page-meta">수정: 2026-03-18</div>
+        <div class="page-desc">Multi-head attention 챕터 완료; Flash Attention 리뷰 시작</div>
+      </div>
+      <div class="page-item">
+        <div class="page-title"><a href="#">인턴 온보딩 체크리스트</a></div>
+        <div class="page-meta">수정: 2026-03-15</div>
+        <div class="page-desc">환경 세팅 완료 및 첫 코드 워크스루</div>
+      </div>
     </div>
   </details>
 
   <details class="member-card">
     <summary>
-      <div class="member-avatar">HO</div>
-      <div><div class="member-name">Henry Oh</div><div class="member-role">Intern (since 2025-11)</div></div>
-      <span class="member-status status-inactive">inactive</span>
+      <div class="member-avatar">한</div>
+      <div><div class="member-name">한지우</div><div class="member-role">MS · 생물정보학</div></div>
+      <span class="member-status status-inactive">비활동</span>
     </summary>
     <div class="member-detail">
-      <div class="no-activity">No activity detected this week</div>
+      <div class="no-activity">이번 주 활동이 감지되지 않았습니다</div>
+    </div>
+  </details>
+
+  <details class="member-card">
+    <summary>
+      <div class="member-avatar">오</div>
+      <div><div class="member-name">오현우</div><div class="member-role">인턴 (2025-11~)</div></div>
+      <span class="member-status status-inactive">비활동</span>
+    </summary>
+    <div class="member-detail">
+      <div class="no-activity">이번 주 활동이 감지되지 않았습니다</div>
     </div>
   </details>
 </div>
 
-<h2>Activity Timeline</h2>
+<h2>활동 타임라인</h2>
 <div class="timeline">
   <div class="tl-item">
-    <div class="tl-date">2026-03-20 (Thu)</div>
-    <div class="tl-content">Ablation study results updated — comparison table added</div>
-    <div class="tl-author">Alice Kim</div>
+    <div class="tl-date">2026-03-20 (목)</div>
+    <div class="tl-content">Ablation 결과 업데이트 — 비교 테이블 추가</div>
+    <div class="tl-author">홍길동</div>
   </div>
   <div class="tl-item">
-    <div class="tl-date">2026-03-20 (Thu)</div>
-    <div class="tl-content">Quarterly report figures created</div>
-    <div class="tl-author">Eve Jung</div>
+    <div class="tl-date">2026-03-20 (목)</div>
+    <div class="tl-content">분기 보고서 시각화 그림 작성</div>
+    <div class="tl-author">윤서연</div>
   </div>
   <div class="tl-item">
-    <div class="tl-date">2026-03-19 (Wed)</div>
-    <div class="tl-content">ICML draft methods section rewritten</div>
-    <div class="tl-author">Alice Kim</div>
+    <div class="tl-date">2026-03-19 (수)</div>
+    <div class="tl-content">ICML 초안 방법론 섹션 수정</div>
+    <div class="tl-author">홍길동</div>
   </div>
   <div class="tl-item">
-    <div class="tl-date">2026-03-19 (Wed)</div>
-    <div class="tl-content">Annotation guide v2 with updated criteria</div>
-    <div class="tl-author">Carol Park</div>
+    <div class="tl-date">2026-03-19 (수)</div>
+    <div class="tl-content">어노테이션 가이드 v2 기준 업데이트</div>
+    <div class="tl-author">김철수</div>
   </div>
   <div class="tl-item">
-    <div class="tl-date">2026-03-18 (Tue)</div>
-    <div class="tl-content">FastAPI migration completed</div>
-    <div class="tl-author">Bob Lee</div>
+    <div class="tl-date">2026-03-18 (화)</div>
+    <div class="tl-content">FastAPI 마이그레이션 완료</div>
+    <div class="tl-author">이영희</div>
   </div>
   <div class="tl-item">
-    <div class="tl-date">2026-03-18 (Tue)</div>
-    <div class="tl-content">Attention mechanisms study notes updated</div>
-    <div class="tl-author">Frank Song</div>
+    <div class="tl-date">2026-03-18 (화)</div>
+    <div class="tl-content">Attention mechanisms 스터디 노트 업데이트</div>
+    <div class="tl-author">박민수</div>
   </div>
   <div class="tl-item">
-    <div class="tl-date">2026-03-17 (Mon)</div>
-    <div class="tl-content">Weekly meeting notes — evaluation metrics discussion</div>
-    <div class="tl-author">Alice Kim</div>
+    <div class="tl-date">2026-03-17 (월)</div>
+    <div class="tl-content">주간 미팅 — 평가 지표 논의</div>
+    <div class="tl-author">홍길동</div>
   </div>
   <div class="tl-item">
-    <div class="tl-date">2026-03-17 (Mon)</div>
-    <div class="tl-content">Data quality filtering pipeline implemented</div>
-    <div class="tl-author">Carol Park</div>
+    <div class="tl-date">2026-03-17 (월)</div>
+    <div class="tl-content">데이터 품질 필터링 파이프라인 구현</div>
+    <div class="tl-author">김철수</div>
   </div>
   <div class="tl-item">
-    <div class="tl-date">2026-03-17 (Mon)</div>
-    <div class="tl-content">Literature review — 5 ICLR 2026 papers summarized</div>
-    <div class="tl-author">Dave Moon</div>
+    <div class="tl-date">2026-03-17 (월)</div>
+    <div class="tl-content">문헌 조사 — ICLR 2026 논문 5편 요약</div>
+    <div class="tl-author">정다은</div>
   </div>
   <div class="tl-item">
-    <div class="tl-date">2026-03-16 (Sun)</div>
-    <div class="tl-content">Monthly GPU cost report published</div>
-    <div class="tl-author">Bob Lee</div>
+    <div class="tl-date">2026-03-16 (일)</div>
+    <div class="tl-content">월간 GPU 비용 보고서 작성</div>
+    <div class="tl-author">이영희</div>
   </div>
   <div class="tl-item">
-    <div class="tl-date">2026-03-15 (Sat)</div>
-    <div class="tl-content">Intern onboarding checklist completed</div>
-    <div class="tl-author">Frank Song</div>
+    <div class="tl-date">2026-03-15 (토)</div>
+    <div class="tl-content">인턴 온보딩 체크리스트 완료</div>
+    <div class="tl-author">박민수</div>
   </div>
 </div>
 
 <footer>
-  <p>Generated by <strong>notion-team-dashboard</strong> — this is a demo with sample data</p>
-  <p>Powered by Claude Code CLI + Notion MCP</p>
+  <p><strong>notion-team-dashboard</strong>로 생성 — 이 페이지는 샘플 데이터 데모입니다</p>
+  <p>Claude Code CLI + Notion MCP 기반</p>
 </footer>
 
 </body>

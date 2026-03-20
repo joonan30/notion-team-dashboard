@@ -1,64 +1,65 @@
 # notion-team-dashboard
 
-Auto-generate a weekly activity dashboard from your team's Notion workspace. Powered by [Claude Code](https://claude.com/claude-code) CLI and the [Notion MCP Server](https://github.com/makenotion/notion-mcp-server).
+팀 Notion 워크스페이스의 주간 활동을 자동으로 수집하여 HTML 대시보드로 생성합니다.
+[Claude Code](https://claude.com/claude-code) CLI와 [Notion MCP Server](https://github.com/makenotion/notion-mcp-server)를 활용합니다.
 
-**Zero backend. Zero database. Just one shell script → one HTML file.**
+**백엔드 없음. DB 없음. 셸 스크립트 하나로 HTML 파일 하나 생성.**
 
 ```
-generate_dashboard.sh
+./generate_dashboard.sh
   → Claude Code CLI (claude --print)
-    → Notion MCP tools (search, fetch)
-      → Collects per-member activity
-    → Writes dashboard.html
+    → Notion MCP (검색, 페이지 조회)
+      → 멤버별 활동 수집
+    → dashboard.html 생성
 ```
 
-## What You Get
+## 결과물 미리보기
 
-A self-contained HTML dashboard with:
+> **[라이브 데모 보기](https://joonan30.github.io/notion-team-dashboard/)** (샘플 데이터)
 
-- **Stats overview** — active projects, team members, deadlines, pages updated
-- **Deadline tracker** — upcoming deadlines with countdown
-- **Project cards** — task progress (done / doing / todo) per project
-- **Member cards** — expandable cards showing each member's weekly activity with direct Notion links
-- **Activity timeline** — chronological view of all workspace changes
-- **Dark theme** — modern, responsive layout; no external dependencies
+생성되는 대시보드 구성:
 
-## Prerequisites
+- **통계 요약** — 활성 프로젝트, 팀원 수, 마감일, 업데이트된 페이지
+- **마감일 트래커** — D-day 카운트다운
+- **프로젝트 카드** — 프로젝트별 진행 상황 (완료 / 진행중 / 예정)
+- **멤버 카드** — 클릭하면 펼쳐지는 개인별 주간 활동 + Notion 링크
+- **활동 타임라인** — 시간순 전체 변경 이력
+- **다크 테마** — 반응형 레이아웃, 외부 의존성 없음
 
-| Requirement | Notes |
+## 필요 사항
+
+| 항목 | 비고 |
 |---|---|
-| [Claude Code CLI](https://claude.com/claude-code) | `claude` command on PATH |
-| [Node.js](https://nodejs.org/) ≥ 18 | For running the Notion MCP server via `npx` |
-| Python 3 | For config parsing (pre-installed on macOS/Linux) |
-| A Notion workspace | With an [internal integration](#step-1-create-a-notion-integration) |
+| [Claude Code CLI](https://claude.com/claude-code) | `claude` 명령어가 PATH에 있어야 함 |
+| [Node.js](https://nodejs.org/) 18 이상 | Notion MCP 서버 실행용 (`npx`) |
+| Python 3 | 설정 파싱용 (macOS/Linux에 기본 설치됨) |
+| Notion 워크스페이스 | [내부 통합(Integration)](#1단계-notion-integration-생성) 필요 |
 
-## Setup
+## 설정 방법
 
-### Step 1: Create a Notion Integration
+### 1단계: Notion Integration 생성
 
-1. Go to [notion.so/my-integrations](https://www.notion.so/my-integrations)
-2. Click **"+ New integration"**
-3. Fill in:
-   - **Name**: e.g. `Team Dashboard`
-   - **Associated workspace**: select your workspace
-   - **Capabilities**: enable **Read content**, **Read comments**, **Read user information**
-4. Click **Submit** → copy the **Internal Integration Secret** (starts with `ntn_...`)
+1. [notion.so/my-integrations](https://www.notion.so/my-integrations) 접속
+2. **"+ 새 통합(New integration)"** 클릭
+3. 설정:
+   - **이름**: 예) `팀 대시보드`
+   - **연결된 워크스페이스**: 본인 워크스페이스 선택
+   - **기능(Capabilities)**: **콘텐츠 읽기**, **댓글 읽기**, **사용자 정보 읽기** 활성화
+4. **제출** → **내부 통합 시크릿** 복사 (`ntn_...`으로 시작)
 
-### Step 2: Share Pages with the Integration
+### 2단계: 페이지에 Integration 연결
 
-In Notion, for each top-level page you want the dashboard to track:
+대시보드에서 추적할 Notion 페이지마다:
 
-1. Open the page → click **"..."** (top right) → **"Connections"**
-2. Search for your integration name (e.g. `Team Dashboard`)
-3. Click **Confirm**
+1. 페이지 열기 → 우측 상단 **"..."** → **"연결(Connections)"**
+2. 만든 Integration 이름 검색 (예: `팀 대시보드`)
+3. **확인** 클릭
 
-> The integration can only see pages explicitly shared with it (and their sub-pages).
+> Integration은 명시적으로 공유된 페이지(및 하위 페이지)만 접근할 수 있습니다.
 
-### Step 3: Configure Claude Code with Notion MCP
+### 3단계: Claude Code에 Notion MCP 설정
 
-Add the Notion MCP server to your Claude Code settings.
-
-**Option A: Global settings** (`~/.claude/settings.json`):
+`~/.claude/settings.json`에 Notion MCP 서버를 추가합니다:
 
 ```json
 {
@@ -67,60 +68,55 @@ Add the Notion MCP server to your Claude Code settings.
       "command": "npx",
       "args": ["-y", "@notionhq/notion-mcp-server"],
       "env": {
-        "OPENAPI_MCP_HEADERS": "{\"Authorization\": \"Bearer ntn_YOUR_TOKEN_HERE\", \"Notion-Version\": \"2022-06-28\"}"
+        "OPENAPI_MCP_HEADERS": "{\"Authorization\": \"Bearer ntn_여기에_토큰_입력\", \"Notion-Version\": \"2022-06-28\"}"
       }
     }
   }
 }
 ```
 
-**Option B: Project settings** (`.claude/settings.json` in the repo):
+> `ntn_여기에_토큰_입력`을 1단계에서 복사한 토큰으로 교체하세요.
 
-Same format as above. This keeps the MCP config scoped to this project. Note: the token is in an env var, so treat this file as sensitive (it's `.gitignore`'d by default).
-
-> Replace `ntn_YOUR_TOKEN_HERE` with your actual integration token from Step 1.
-
-### Step 4: Install & Configure
+### 4단계: 설치 및 설정
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/notion-team-dashboard.git
+# 클론
+git clone https://github.com/joonan30/notion-team-dashboard.git
 cd notion-team-dashboard
 
-# Create your config
+# 설정 파일 생성
 cp config.example.json config.json
+# config.json을 본인 팀에 맞게 수정
 ```
 
-Edit `config.json` with your team info:
+`config.json` 수정 예시:
 
 ```jsonc
 {
-  "team_name": "My Research Lab",      // shown in dashboard header
-  "team_url": "",                       // optional: team website URL
-  "output_path": "./dashboard.html",    // where to write the dashboard
-  "lookback_days": 7,                   // how many days back to scan
+  "team_name": "우리 연구실",           // 대시보드 헤더에 표시
+  "team_url": "",                        // (선택) 팀 웹사이트 URL
+  "output_path": "./dashboard.html",     // 대시보드 출력 경로
+  "lookback_days": 7,                    // 며칠 전까지 조회할지
 
   "workspace": {
-    // Optional: if you have a Notion database for interns/students,
-    // put its collection ID here. Find it via notion-search.
+    // (선택) Notion에 인턴/학생용 데이터베이스가 있다면 collection ID 입력
     "intern_db_collection": ""
   },
 
   "members": {
     "graduate": {
-      "Alice Kim": {
+      "홍길동": {
         "role": "PhD",
-        "focus": "Machine Learning",
+        "focus": "기계학습",
         "notion_page": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "alt_name": "김앨리스"           // optional: alternative name for search
+        "alt_name": "Gildong Hong"    // (선택) 영어 이름 등 대체 이름
       }
     },
     "staff": {
-      "Bob Lee": {
-        "role": "Research Engineer"
-      }
+      "김철수": { "role": "연구원" }
     },
     "interns": {
-      "Carol Park": {
+      "이영희": {
         "since": "2026-01",
         "notion_page": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
       }
@@ -129,134 +125,132 @@ Edit `config.json` with your team info:
 }
 ```
 
-#### Finding Notion Page IDs
+#### Notion Page ID 찾는 법
 
-A Notion page ID is the 32-character hex string in any Notion URL:
+Notion 페이지 URL에서 32자리 16진수 문자열이 Page ID입니다:
 
 ```
-https://www.notion.so/My-Page-Title-abc123def456...
-                                     ^^^^^^^^^^^^^^^^
-                                     This is the page ID
+https://www.notion.so/내-페이지-제목-abc123def456...
+                                      ^^^^^^^^^^^^^^^^
+                                      이 부분이 Page ID
 ```
 
-Or use Claude Code interactively:
+또는 Claude Code에서 직접 검색:
 
 ```bash
 claude
-> Search Notion for "Alice Kim" using notion-search
+> notion-search로 "홍길동" 검색해줘
 ```
 
-### Step 5: Run
+### 5단계: 실행
 
 ```bash
-# Generate the dashboard
+# 대시보드 생성
 ./generate_dashboard.sh
 
-# Preview
-open dashboard.html    # macOS
+# 브라우저에서 확인
+open dashboard.html      # macOS
 xdg-open dashboard.html  # Linux
 ```
 
-**Dry-run mode** (prints the prompt without calling Claude):
+**드라이런 모드** (프롬프트만 출력, Claude 실행 안 함):
 
 ```bash
 ./generate_dashboard.sh --dry-run
 ```
 
-## Scheduling (Optional)
+## 자동 실행 설정 (선택)
 
-### macOS — launchd (recommended)
+### macOS — launchd
 
-1. Edit `com.notion-team-dashboard.plist`:
-   - Update the script path to your installation directory
-   - Update log paths if desired
-
-2. Install:
+1. `com.notion-team-dashboard.plist`에서 스크립트 경로 수정
+2. 설치:
    ```bash
    cp com.notion-team-dashboard.plist ~/Library/LaunchAgents/
    launchctl load ~/Library/LaunchAgents/com.notion-team-dashboard.plist
    ```
-
-3. To unload:
+3. 해제:
    ```bash
    launchctl unload ~/Library/LaunchAgents/com.notion-team-dashboard.plist
    ```
 
-By default it runs every **Friday at 9:00 AM**. Edit the `StartCalendarInterval` in the plist to change.
+기본값: 매주 **금요일 오전 9시** 실행. plist의 `StartCalendarInterval`에서 변경 가능.
 
 ### Linux / WSL — cron
 
 ```bash
 crontab -e
-# Add (every Friday at 9 AM):
+# 매주 금요일 오전 9시:
 0 9 * * 5 /path/to/notion-team-dashboard/generate_dashboard.sh
 ```
 
-## Configuration Reference
+## 설정 항목 레퍼런스
 
-| Field | Required | Description |
+| 항목 | 필수 | 설명 |
 |---|---|---|
-| `team_name` | Yes | Display name for your team in the dashboard header |
-| `team_url` | No | Team website URL; if provided, Claude will fetch it for additional context |
-| `output_path` | Yes | Path for the generated HTML file (relative to script dir or absolute) |
-| `lookback_days` | No | Number of days to look back for activity (default: 7) |
-| `workspace.intern_db_collection` | No | Notion collection ID for an intern/student database (format: `collection://UUID`) |
-| `members.graduate` | No | Map of graduate student names → `{role, focus, notion_page?, alt_name?}` |
-| `members.staff` | No | Map of staff names → `{role}` |
-| `members.interns` | No | Map of intern names → `{since, notion_page?}` |
+| `team_name` | O | 대시보드 헤더에 표시될 팀 이름 |
+| `team_url` | X | 팀 웹사이트 URL (입력하면 추가 컨텍스트로 활용) |
+| `output_path` | O | 생성될 HTML 파일 경로 (상대/절대 모두 가능) |
+| `lookback_days` | X | 조회 기간 (기본값: 7일) |
+| `workspace.intern_db_collection` | X | Notion 인턴/학생 DB의 collection ID (`collection://UUID` 형식) |
+| `members.graduate` | X | 대학원생 — `{role, focus, notion_page?, alt_name?}` |
+| `members.staff` | X | 스태프 — `{role}` |
+| `members.interns` | X | 인턴 — `{since, notion_page?}` |
 
-### Member Fields
+### 멤버 필드
 
-| Field | Description |
+| 필드 | 설명 |
 |---|---|
-| `role` | Position label: `PhD`, `MS`, `Postdoc`, `Research Engineer`, etc. |
-| `focus` | Research area / team (shown as tag in dashboard) |
-| `notion_page` | UUID of the member's top-level Notion page (enables deep sub-page search) |
-| `alt_name` | Alternative name for Notion user search (e.g., name in another language) |
-| `since` | Start date for interns (YYYY-MM format) |
+| `role` | 직위: `PhD`, `MS`, `Postdoc`, `연구원` 등 |
+| `focus` | 연구 분야 / 팀 (대시보드에 태그로 표시) |
+| `notion_page` | 해당 멤버의 최상위 Notion 페이지 UUID (하위 페이지 심층 검색 활성화) |
+| `alt_name` | Notion 사용자 검색용 대체 이름 (예: 영어 이름) |
+| `since` | 인턴 시작일 (YYYY-MM 형식) |
 
-## How Activity Detection Works
+## 활동 감지 방식
 
-The dashboard uses a **timestamp-based strategy** instead of creation date filtering, because `created_date_range` only catches new pages and misses edits to existing ones.
+`created_date_range` 필터는 **새로 만든 페이지만** 잡고, 기존 페이지 수정은 놓칩니다. 따라서 **timestamp 기반 전략**을 사용합니다:
 
-1. **Database search** (if `intern_db_collection` is set) — queries the database, checks the `timestamp` field (= last modified time)
-2. **Sub-page search** — for each member with a `notion_page` ID, searches within their page tree using the `page_url` parameter
-3. **User-based search** — searches the workspace with `created_by_user_ids` to find pages created by each member, then filters by modification timestamp
+1. **데이터베이스 검색** — `intern_db_collection` 설정 시, DB를 조회하고 `timestamp` 필드(= 마지막 수정 시간)로 필터링
+2. **하위 페이지 검색** — `notion_page` ID가 있는 멤버는 해당 페이지 트리 내부를 `page_url` 파라미터로 탐색
+3. **사용자 기반 검색** — `created_by_user_ids`로 워크스페이스 전체를 검색 후, 수정 시간으로 필터링
 
-This combination catches both new pages and edits to existing ones within the lookback window.
+이 조합으로 신규 페이지와 기존 페이지 수정 모두를 감지합니다.
 
-## Project Structure
+## 프로젝트 구조
 
 ```
 notion-team-dashboard/
-├── generate_dashboard.sh          # Main script — builds prompt, runs Claude
-├── config.example.json            # Config template (copy to config.json)
-├── config.json                    # Your config (gitignored)
-├── com.notion-team-dashboard.plist  # macOS scheduler template
-├── LICENSE                        # MIT
+├── generate_dashboard.sh            # 메인 스크립트 — 프롬프트 생성 후 Claude 실행
+├── config.example.json              # 설정 템플릿 (config.json으로 복사)
+├── config.json                      # 내 설정 (gitignore됨)
+├── com.notion-team-dashboard.plist  # macOS 스케줄러 템플릿
+├── docs/                            # GitHub Pages 웹사이트
+├── example/dashboard-demo.html      # 데모 대시보드 (샘플 데이터)
+├── LICENSE                          # MIT
 └── .gitignore
 ```
 
-## Troubleshooting
+## 문제 해결
 
-### "Invalid API key" error
-- Verify your Notion token in Claude Code's MCP settings
-- Make sure the token starts with `ntn_`
-- Ensure the integration is still active at [notion.so/my-integrations](https://www.notion.so/my-integrations)
+### "Invalid API key" 오류
+- Claude Code MCP 설정의 Notion 토큰 확인
+- 토큰이 `ntn_`으로 시작하는지 확인
+- [notion.so/my-integrations](https://www.notion.so/my-integrations)에서 Integration이 활성 상태인지 확인
 
-### No activity detected for a member
-- Check that the member's pages are **shared with the integration** (Step 2)
-- Verify the `notion_page` ID in config is correct
-- Try searching manually: `claude -p "Search Notion for 'MemberName' using notion-search"`
+### 특정 멤버의 활동이 감지되지 않음
+- 해당 멤버의 페이지가 **Integration과 공유**되어 있는지 확인 (2단계)
+- config의 `notion_page` ID가 정확한지 확인
+- 수동 검색: `claude -p "notion-search로 '홍길동' 검색해줘"`
 
-### Claude CLI not found
-- Install Claude Code: [claude.com/claude-code](https://claude.com/claude-code)
-- Ensure `claude` is on your PATH
+### Claude CLI를 찾을 수 없음
+- Claude Code 설치: [claude.com/claude-code](https://claude.com/claude-code)
+- `claude`가 PATH에 있는지 확인
 
-### Dashboard is empty or minimal
-- The integration can only see pages explicitly shared with it
-- Share the top-level workspace pages or the relevant team pages with the integration
+### 대시보드가 비어있거나 내용이 적음
+- Integration은 명시적으로 공유된 페이지만 접근 가능
+- 최상위 워크스페이스 페이지나 팀 페이지를 Integration과 공유하세요
 
-## License
+## 라이선스
 
-MIT — see [LICENSE](LICENSE).
+MIT — [LICENSE](LICENSE) 참조

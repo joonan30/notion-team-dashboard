@@ -1,5 +1,5 @@
 {
-  "team_name": "My Lab",
+  "team_name": "우리 연구실",
   "team_url": "",
   "output_path": "./dashboard.html",
   "lookback_days": 7,
@@ -8,25 +8,25 @@
   },
   "members": {
     "graduate": {
-      "Alice Kim": {
+      "홍길동": {
         "role": "PhD",
-        "focus": "Machine Learning",
+        "focus": "기계학습",
         "notion_page": "",
-        "alt_name": ""
+        "alt_name": "Gildong Hong"
       },
-      "Bob Park": {
+      "김철수": {
         "role": "MS",
-        "focus": "Data Engineering",
+        "focus": "데이터 엔지니어링",
         "notion_page": ""
       }
     },
     "staff": {
-      "Carol Lee": {
-        "role": "Research Engineer"
+      "이영희": {
+        "role": "연구원"
       }
     },
     "interns": {
-      "Dave Choi": {
+      "박민수": {
         "since": "2026-01",
         "notion_page": ""
       }
